@@ -1,9 +1,6 @@
 package org.redmark;
 
-import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -16,11 +13,14 @@ import com.googlecode.lanterna.terminal.ansi.UnixLikeTTYTerminal;
 import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
 import com.googlecode.lanterna.terminal.swing.AWTTerminal;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.lanterna.input.KeyType.ArrowDown;
 import static com.googlecode.lanterna.input.KeyType.Escape;
@@ -45,14 +45,15 @@ public class Main {
         }
 
         int index = 0;
-        while (true){
-        switch (screen.readInput().getKeyType()){
-            case Escape:{screen.stopScreen(); break;}
-            case ArrowDown: {moveDown(textGraphics, todos, index++); defaultText(textGraphics); screen.refresh(); break;}
-            case ArrowUp: {moveUp(textGraphics, todos, index--); System.out.println("Move Up Called");screen.refresh();break;}
-            default: System.out.println(screen.readInput().getKeyType().name());break;}
-
-    }}
+//        while (true){
+//        switch (screen.readInput().getKeyType()){
+//            case Escape:{screen.stopScreen(); break;}
+//            case ArrowDown: {moveDown(textGraphics, todos, index++); defaultText(textGraphics); screen.refresh(); break;}
+//            case ArrowUp: {moveUp(textGraphics, todos, index--); System.out.println("Move Up Called");screen.refresh();break;}
+//            default: System.out.println(screen.readInput().getKeyType().name());break;}
+//
+//    }
+}
 
     public static void defaultText(TextGraphics textGraphics)
     {
@@ -82,4 +83,22 @@ public class Main {
 
     }
 
+}
+
+class KeyListenerCustom implements java.awt.event.KeyListener{
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
 }
