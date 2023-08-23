@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
+
+    static int mainInd = 0;
     public static void main(String[] args) throws IOException {;
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
@@ -54,15 +56,18 @@ public class Main {
                         case ArrowDown:
                         {
                             moveDown(textGraphics, todos, index++);
-                            System.out.println("Move Down Called : "+ index);
+                            mainInd++;
+                            System.out.println("Move Down Called : "+ index+ " "+mainInd);
                             defaultText(textGraphics);
                             screen.refresh();
                             break;
                         }
                         case ArrowUp:
                         {
+                            --mainInd;
                             moveUp(textGraphics, todos, --index);
-                            System.out.println("Move Up Called : "+ index);
+
+                            System.out.println("Move Up Called : "+ index + " "+mainInd);
                             screen.refresh();
                             break;
                         }
@@ -89,34 +94,44 @@ public class Main {
     public static void moveDown(TextGraphics textGraphics, String [] todos, int rows)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
-        textGraphics.putString(2, 4+rows, "[]"+todos[rows]);
-        if(rows>0)
-        {resetOld(textGraphics, todos, rows);}
+        if(mainInd < todos.length) {
+            textGraphics.putString(2, 4 + mainInd, "[]" + todos[mainInd]);
+            if (mainInd > 0) {
+                resetOld(textGraphics, todos, rows);
+            }
+        }
+        else
+        {
+            mainInd--;
+            System.out.println("Out of Index, cant't move");
+        }
 
     }
     public static void moveUp(TextGraphics textGraphics, String[] todos, int rows)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
         rows--;
-        if(rows>-1)
+        mainInd--;
+        if(mainInd>-1)
         {
-            textGraphics.putString(2, 4+rows, "[]"+todos[rows]);
-            if(rows<todos.length-1)
+            textGraphics.putString(2, 4+mainInd, "[]"+todos[mainInd]);
+            if(mainInd<todos.length-1)
             {resetOldUp(textGraphics, todos, rows);}
         }
         else
-            System.out.println("Out of Index, can't move");
+        { mainInd++;
+            System.out.println("Out of Index, can't move");}
 
     }
     public static void resetOld(TextGraphics textGraphics, String[] todos, int rows) {
         textGraphics.disableModifiers(SGR.REVERSE);
-        textGraphics.putString(2, 4+rows-1, "[]"+todos[rows-1]);
+        textGraphics.putString(2, 4+mainInd-1, "[]"+todos[mainInd-1]);
 
     }
     public static void resetOldUp(TextGraphics textGraphics, String[] todos, int rows)
     {
         textGraphics.disableModifiers(SGR.REVERSE);
-        textGraphics.putString(2, 4+rows+1, "[]"+todos[rows+1]);
+        textGraphics.putString(2, 4+mainInd+1, "[]"+todos[mainInd+1]);
     }
 
 }
