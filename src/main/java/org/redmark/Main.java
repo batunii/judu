@@ -22,8 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.googlecode.lanterna.input.KeyType.ArrowDown;
-import static com.googlecode.lanterna.input.KeyType.Escape;
+import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {;
@@ -45,15 +44,40 @@ public class Main {
         }
 
         int index = 0;
-//        while (true){
-//        switch (screen.readInput().getKeyType()){
-//            case Escape:{screen.stopScreen(); break;}
-//            case ArrowDown: {moveDown(textGraphics, todos, index++); defaultText(textGraphics); screen.refresh(); break;}
-//            case ArrowUp: {moveUp(textGraphics, todos, index--); System.out.println("Move Up Called");screen.refresh();break;}
-//            default: System.out.println(screen.readInput().getKeyType().name());break;}
-//
-//    }
-}
+       // KeyStroke keyStroke = screen.readInput();
+        while (true){
+            KeyStroke keyStroke = screen.readInput();
+            if(!keyStroke.getKeyType().equals(EOF))
+                {
+                    switch (keyStroke.getKeyType()){
+                        case Escape:{screen.stopScreen(); break;}
+                        case ArrowDown:
+                        {
+                            moveDown(textGraphics, todos, index++);
+                            System.out.println("Move Down Called : "+ index);
+                            defaultText(textGraphics);
+                            screen.refresh();
+                            break;
+                        }
+                        case ArrowUp:
+                        {
+                            moveUp(textGraphics, todos, --index);
+                            System.out.println("Move Up Called : "+ index);
+                            screen.refresh();
+                            break;
+                        }
+                        default:
+                        {
+                            System.out.println(keyStroke.getKeyType().name());
+                            break;
+                        }
+                    }
+                }
+            else
+                break;
+
+        }
+    }
 
     public static void defaultText(TextGraphics textGraphics)
     {
@@ -73,32 +97,26 @@ public class Main {
     public static void moveUp(TextGraphics textGraphics, String[] todos, int rows)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
-        textGraphics.putString(2, 4+rows, "[]"+todos[rows]);
-        if(rows<todos.length-1)
-        {resetOld(textGraphics, todos, rows);}
+        rows--;
+        if(rows>-1)
+        {
+            textGraphics.putString(2, 4+rows, "[]"+todos[rows]);
+            if(rows<todos.length-1)
+            {resetOldUp(textGraphics, todos, rows);}
+        }
+        else
+            System.out.println("Out of Index, can't move");
+
     }
     public static void resetOld(TextGraphics textGraphics, String[] todos, int rows) {
-        {textGraphics.disableModifiers(SGR.REVERSE);
-        textGraphics.putString(2, 4+rows-1, "[]"+todos[rows-1]);}
+        textGraphics.disableModifiers(SGR.REVERSE);
+        textGraphics.putString(2, 4+rows-1, "[]"+todos[rows-1]);
 
     }
-
-}
-
-class KeyListenerCustom implements java.awt.event.KeyListener{
-
-    @Override
-    public void keyTyped(KeyEvent keyEvent) {
-
+    public static void resetOldUp(TextGraphics textGraphics, String[] todos, int rows)
+    {
+        textGraphics.disableModifiers(SGR.REVERSE);
+        textGraphics.putString(2, 4+rows+1, "[]"+todos[rows+1]);
     }
 
-    @Override
-    public void keyPressed(KeyEvent keyEvent) {
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
-    }
 }
