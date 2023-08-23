@@ -55,19 +55,17 @@ public class Main {
                         case Escape:{screen.stopScreen(); break;}
                         case ArrowDown:
                         {
-                            moveDown(textGraphics, todos, index++);
-                            mainInd++;
-                            System.out.println("Move Down Called : "+ index+ " "+mainInd);
+                            moveDown(textGraphics, todos);
+                            System.out.println("Move Down Called : "+ index++ + " "+mainInd);
                             defaultText(textGraphics);
                             screen.refresh();
                             break;
                         }
                         case ArrowUp:
                         {
-                            --mainInd;
-                            moveUp(textGraphics, todos, --index);
+                            moveUp(textGraphics, todos);
 
-                            System.out.println("Move Up Called : "+ index + " "+mainInd);
+                            System.out.println("Move Up Called : "+ --index + " "+mainInd);
                             screen.refresh();
                             break;
                         }
@@ -91,14 +89,15 @@ public class Main {
         textGraphics.setBackgroundColor(TextColor.ANSI.DEFAULT);
     }
 
-    public static void moveDown(TextGraphics textGraphics, String [] todos, int rows)
+    public static void moveDown(TextGraphics textGraphics, String [] todos)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
         if(mainInd < todos.length) {
             textGraphics.putString(2, 4 + mainInd, "[]" + todos[mainInd]);
             if (mainInd > 0) {
-                resetOld(textGraphics, todos, rows);
+                resetOld(textGraphics, todos);
             }
+            mainInd++;
         }
         else
         {
@@ -107,28 +106,27 @@ public class Main {
         }
 
     }
-    public static void moveUp(TextGraphics textGraphics, String[] todos, int rows)
+    public static void moveUp(TextGraphics textGraphics, String[] todos)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
-        rows--;
         mainInd--;
         if(mainInd>-1)
         {
             textGraphics.putString(2, 4+mainInd, "[]"+todos[mainInd]);
             if(mainInd<todos.length-1)
-            {resetOldUp(textGraphics, todos, rows);}
+            {resetOldUp(textGraphics, todos);}
         }
         else
         { mainInd++;
             System.out.println("Out of Index, can't move");}
 
     }
-    public static void resetOld(TextGraphics textGraphics, String[] todos, int rows) {
+    public static void resetOld(TextGraphics textGraphics, String[] todos){
         textGraphics.disableModifiers(SGR.REVERSE);
         textGraphics.putString(2, 4+mainInd-1, "[]"+todos[mainInd-1]);
 
     }
-    public static void resetOldUp(TextGraphics textGraphics, String[] todos, int rows)
+    public static void resetOldUp(TextGraphics textGraphics, String[] todos)
     {
         textGraphics.disableModifiers(SGR.REVERSE);
         textGraphics.putString(2, 4+mainInd+1, "[]"+todos[mainInd+1]);
