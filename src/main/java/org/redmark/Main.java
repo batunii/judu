@@ -2,25 +2,11 @@ package org.redmark;
 
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.ansi.UnixLikeTTYTerminal;
-import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
-import com.googlecode.lanterna.terminal.swing.AWTTerminal;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.lanterna.input.KeyType.*;
 
@@ -35,15 +21,13 @@ public class Main {
         textGraphics.enableModifiers(SGR.REVERSE);
         textGraphics.putString((screen.getTerminalSize().getColumns()-heading.length())/2, 1, heading);
         defaultText(textGraphics);
-        textGraphics.putString(2, 3, "TODOs");
-        String prefix = "[]";
         String[] todos = {"Do This", "Do that", "And finally This"};
-        int rows = 4;
-        for(String todo : todos)
-        {
-            textGraphics.putString(2,rows++ , prefix+todo);
-             screen.refresh();
-        }
+        String[] dones = {"Navigation", "Out Of Bound", "Git rebase"};
+
+        //renderTodo(todos, textGraphics);
+        renderDones(dones, textGraphics);
+        screen.refresh();
+
 
         int index = 0;
        // KeyStroke keyStroke = screen.readInput();
@@ -130,6 +114,31 @@ public class Main {
     {
         textGraphics.disableModifiers(SGR.REVERSE);
         textGraphics.putString(2, 4+mainInd+1, "[]"+todos[mainInd+1]);
+    }
+
+    public static void renderTodo(String[] todos, TextGraphics textGraphics)
+    {
+        textGraphics.putString(2, 3, "TODOs");
+        String prefix = "[]";
+
+        int rows = 4;
+        for(String todo : todos)
+        {
+            textGraphics.putString(2,rows++ , prefix+todo);
+        }
+
+    }
+    public static void renderDones(String[] dones, TextGraphics textGraphics)
+    {
+        textGraphics.putString(2, 3, "Done");
+        String prefix = "[X]";
+
+        int rows = 4;
+        for(String done : dones)
+        {
+            textGraphics.putString(2,rows++ , prefix+done);
+        }
+
     }
 
 }
