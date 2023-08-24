@@ -9,6 +9,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.googlecode.lanterna.input.KeyType.*;
 
@@ -23,6 +24,7 @@ public class Main {
     static int terminalWidth = 0;
     static String donePrefix = "[X]";
     static String todoPrefix = "[]";
+    static int maxInd = Integer.max(todos.size(), dones.size());
     public static void main(String[] args) throws IOException {;
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
@@ -32,7 +34,6 @@ public class Main {
         textGraphics.putString((screen.getTerminalSize().getColumns()-heading.length())/2, 1, heading);
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
-
 
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
@@ -60,7 +61,6 @@ public class Main {
                         }
                         case ArrowUp:
                         {
-
                             if(isInTodo)
                                 moveUp(textGraphics, todos, todoPrefix);
                             else
@@ -98,10 +98,8 @@ public class Main {
                 }
             else
                 break;
-
         }
     }
-
     private static void switchTasks() {
         if(isInTodo)
         {
@@ -113,13 +111,12 @@ public class Main {
         }
     }
 
-
     private static void renderBlanks(TextGraphics textGraphics) {
-        for(int i = 4; i<4+Integer.max(todos.size(), dones.size()); i++)
+        for(int i = 4; i<4+maxInd(maxInd,todos.size(),dones.size()); i++)
         {
             textGraphics.putString(0, i, " ".repeat(terminalWidth));
         }
-
+        System.out.println(maxInd(maxInd,todos.size(),dones.size()));
     }
 
     private static void changeRenderer(TextGraphics textGraphics) {
@@ -160,7 +157,6 @@ public class Main {
             mainInd--;
             System.out.println("Out of Index, cant't move");
         }
-
     }
     public static void moveUp(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
@@ -169,7 +165,6 @@ public class Main {
         mainInd--;
         if(mainInd>-1)
         {
-
             textGraphics.putString(2, 4+mainInd, prefix+todos.get(mainInd));
             if(mainInd<todos.size()-1)
             {resetOldUp(textGraphics, todos);}
@@ -177,7 +172,6 @@ public class Main {
         else
         { mainInd++;
             System.out.println("Out of Index, can't move");}
-
     }
     public static void resetOld(TextGraphics textGraphics, ArrayList<String> todos){
         textGraphics.disableModifiers(SGR.REVERSE);
@@ -203,10 +197,8 @@ public class Main {
         int rows = 4;
         for(String todo : todos)
         {
-
             textGraphics.putString(2,rows++ , prefix+todo);
         }
-
     }
     public static void renderDones(ArrayList<String> dones, TextGraphics textGraphics)
     {
@@ -223,10 +215,14 @@ public class Main {
 
     public static <T> T pop(ArrayList<T> list, int index)
     {
-        
         T item = list.get(index);
         list.remove(index);
         return item;
     }
-
+    public static Integer maxInd(Integer ...args)
+    {
+        ArrayList<Integer>argList = new ArrayList<>(List.of(args));
+        maxInd = argList.stream().reduce(0,Integer::max);
+        return maxInd; 
+    }
 }
