@@ -82,6 +82,11 @@ public class Main {
                         case Enter:
                         {
                             System.out.println("Pressed Enter on item number: " + mainInd);
+                            switchTasks();
+                            renderBlanks(textGraphics);
+                            changeRenderer(textGraphics);
+                            mainInd =-1;
+                            screen.refresh();
                             break;
                         }
                         default:
@@ -97,21 +102,22 @@ public class Main {
         }
     }
 
-
-    private static void renderBlanks(TextGraphics textGraphics) {
-        int rows = 4;
+    private static void switchTasks() {
         if(isInTodo)
         {
-            for(String todo : todos)
-            {
-                textGraphics.putString(0, rows++ , " ".repeat(terminalWidth));
-            }
+            dones.add(pop(todos, mainInd));
         }
-        else {
-            for(String done : dones)
-            {
-                textGraphics.putString(0, rows++ , " ".repeat(terminalWidth));
-            }
+        else
+        {
+            todos.add(pop(dones, mainInd));
+        }
+    }
+
+
+    private static void renderBlanks(TextGraphics textGraphics) {
+        for(int i = 4; i<4+Integer.max(todos.size(), dones.size()); i++)
+        {
+            textGraphics.putString(0, i, " ".repeat(terminalWidth));
         }
 
     }
@@ -213,6 +219,14 @@ public class Main {
             textGraphics.putString(2,rows++ , prefix+done);
         }
 
+    }
+
+    public static <T> T pop(ArrayList<T> list, int index)
+    {
+        
+        T item = list.get(index);
+        list.remove(index);
+        return item;
     }
 
 }
