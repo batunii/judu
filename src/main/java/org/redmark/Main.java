@@ -69,7 +69,6 @@ public class Main {
                         {
                             System.out.println("Tab Called, changing section");
                             renderBlanks(textGraphics);
-                           // screen.refresh();
                             changeRenderer(textGraphics);
                             mainInd =0;
                             screen.refresh();
