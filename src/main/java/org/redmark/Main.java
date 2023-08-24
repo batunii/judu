@@ -14,7 +14,7 @@ import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
 
-    static int mainInd = 0;
+    static int mainInd = -1;
     static ArrayList<String> todos = new ArrayList<>(Arrays
             .asList("Do This", "Do that", "And finally This"));
     static ArrayList<String> dones = new ArrayList<>(Arrays
@@ -39,7 +39,7 @@ public class Main {
         screen.refresh();
 
 
-        int index = 0;
+        int index =0;
        // KeyStroke keyStroke = screen.readInput();
         while (true){
             KeyStroke keyStroke = screen.readInput();
@@ -60,6 +60,7 @@ public class Main {
                         }
                         case ArrowUp:
                         {
+
                             if(isInTodo)
                                 moveUp(textGraphics, todos, todoPrefix);
                             else
@@ -74,7 +75,7 @@ public class Main {
                             System.out.println("Tab Called, changing section");
                             renderBlanks(textGraphics);
                             changeRenderer(textGraphics);
-                            mainInd =0;
+                            mainInd =-1;
                             screen.refresh();
                             break;
                         }
@@ -139,12 +140,14 @@ public class Main {
     public static void moveDown(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
+        mainInd++;
         if(mainInd < todos.size()) {
+
             textGraphics.putString(2, 4 + mainInd, prefix + todos.get(mainInd));
+            System.out.println("The Index Curr is : " +mainInd);
             if (mainInd > 0) {
                 resetOld(textGraphics, todos);
             }
-            mainInd++;
         }
         else
         {
@@ -156,9 +159,11 @@ public class Main {
     public static void moveUp(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
+
         mainInd--;
         if(mainInd>-1)
         {
+
             textGraphics.putString(2, 4+mainInd, prefix+todos.get(mainInd));
             if(mainInd<todos.size()-1)
             {resetOldUp(textGraphics, todos);}
