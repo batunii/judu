@@ -7,18 +7,24 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
 
-    static int mainInd = 0;
-    static String[] todos = {"Do This", "Do that", "And finally This"};
-    static String[] dones = {"Navigation", "Out Of Bound", "Git rebase", "OneMore to Test"};
+    static int mainInd = -1;
+    static ArrayList<String> todos = new ArrayList<>(Arrays
+            .asList("Do This", "Do that", "And finally This"));
+    static ArrayList<String> dones = new ArrayList<>(Arrays
+            .asList("Navigation", "Out Of Bound", "Git rebase", "OneMore to Test"));
     static boolean isInTodo = true;
     static int terminalWidth = 0;
     static String donePrefix = "[X]";
     static String todoPrefix = "[]";
+    static int maxInd = Integer.max(todos.size(), dones.size());
     public static void main(String[] args) throws IOException {;
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
@@ -29,13 +35,12 @@ public class Main {
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
 
-
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
         screen.refresh();
 
 
-        int index = 0;
+        int index =0;
        // KeyStroke keyStroke = screen.readInput();
         while (true){
             KeyStroke keyStroke = screen.readInput();
@@ -70,7 +75,17 @@ public class Main {
                             System.out.println("Tab Called, changing section");
                             renderBlanks(textGraphics);
                             changeRenderer(textGraphics);
-                            mainInd =0;
+                            mainInd =-1;
+                            screen.refresh();
+                            break;
+                        }
+                        case Enter:
+                        {
+                            System.out.println("Pressed Enter on item number: " + mainInd);
+                            switchTasks();
+                            renderBlanks(textGraphics);
+                            changeRenderer(textGraphics);
+                            mainInd =-1;
                             screen.refresh();
                             break;
                         }
@@ -83,27 +98,25 @@ public class Main {
                 }
             else
                 break;
-
+        }
+    }
+    private static void switchTasks() {
+        if(isInTodo)
+        {
+            dones.add(pop(todos, mainInd));
+        }
+        else
+        {
+            todos.add(pop(dones, mainInd));
         }
     }
 
-
     private static void renderBlanks(TextGraphics textGraphics) {
-        int rows = 4;
-        if(isInTodo)
+        for(int i = 4; i<4+maxInd(maxInd,todos.size(),dones.size()); i++)
         {
-            for(String todo : todos)
-            {
-                textGraphics.putString(0, rows++ , " ".repeat(terminalWidth));
-            }
+            textGraphics.putString(0, i, " ".repeat(terminalWidth));
         }
-        else {
-            for(String done : dones)
-            {
-                textGraphics.putString(0, rows++ , " ".repeat(terminalWidth));
-            }
-        }
-
+        System.out.println(maxInd(maxInd,todos.size(),dones.size()));
     }
 
     private static void changeRenderer(TextGraphics textGraphics) {
@@ -127,55 +140,56 @@ public class Main {
         textGraphics.setBackgroundColor(TextColor.ANSI.DEFAULT);
     }
 
-    public static void moveDown(TextGraphics textGraphics, String [] todos, String prefix)
+    public static void moveDown(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
-        if(mainInd < todos.length) {
-            textGraphics.putString(2, 4 + mainInd, prefix + todos[mainInd]);
+        mainInd++;
+        if(mainInd < todos.size()) {
+
+            textGraphics.putString(2, 4 + mainInd, prefix + todos.get(mainInd));
+            System.out.println("The Index Curr is : " +mainInd);
             if (mainInd > 0) {
                 resetOld(textGraphics, todos);
             }
-            mainInd++;
         }
         else
         {
             mainInd--;
             System.out.println("Out of Index, cant't move");
         }
-
     }
-    public static void moveUp(TextGraphics textGraphics, String[] todos, String prefix)
+    public static void moveUp(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
+
         mainInd--;
         if(mainInd>-1)
         {
-            textGraphics.putString(2, 4+mainInd, prefix+todos[mainInd]);
-            if(mainInd<todos.length-1)
+            textGraphics.putString(2, 4+mainInd, prefix+todos.get(mainInd));
+            if(mainInd<todos.size()-1)
             {resetOldUp(textGraphics, todos);}
         }
         else
         { mainInd++;
             System.out.println("Out of Index, can't move");}
-
     }
-    public static void resetOld(TextGraphics textGraphics, String[] todos){
+    public static void resetOld(TextGraphics textGraphics, ArrayList<String> todos){
         textGraphics.disableModifiers(SGR.REVERSE);
         if(isInTodo)
-            textGraphics.putString(2, 4+mainInd-1, todoPrefix+todos[mainInd-1]);
+            textGraphics.putString(2, 4+mainInd-1, todoPrefix+todos.get(mainInd-1));
         else
-            textGraphics.putString(2, 4+mainInd-1, donePrefix+todos[mainInd-1]);
+            textGraphics.putString(2, 4+mainInd-1, donePrefix+todos.get(mainInd-1));
     }
-    public static void resetOldUp(TextGraphics textGraphics, String[] todos)
+    public static void resetOldUp(TextGraphics textGraphics, ArrayList<String> todos)
     {
         textGraphics.disableModifiers(SGR.REVERSE);
         if(isInTodo)
-            textGraphics.putString(2, 4+mainInd+1, todoPrefix+todos[mainInd+1]);
+            textGraphics.putString(2, 4+mainInd+1, todoPrefix+todos.get(mainInd+1));
         else
-            textGraphics.putString(2, 4+mainInd+1, donePrefix+todos[mainInd+1]);
+            textGraphics.putString(2, 4+mainInd+1, donePrefix+todos.get(mainInd+1));
     }
 
-    public static void renderTodo(String[] todos, TextGraphics textGraphics)
+    public static void renderTodo(ArrayList<String> todos, TextGraphics textGraphics)
     {
         textGraphics.putString(2, 3, "TODOs");
         String prefix = "[]";
@@ -183,12 +197,10 @@ public class Main {
         int rows = 4;
         for(String todo : todos)
         {
-
             textGraphics.putString(2,rows++ , prefix+todo);
         }
-
     }
-    public static void renderDones(String[] dones, TextGraphics textGraphics)
+    public static void renderDones(ArrayList<String> dones, TextGraphics textGraphics)
     {
         textGraphics.putString(2, 3, "Done");
         String prefix = "[X]";
@@ -201,4 +213,16 @@ public class Main {
 
     }
 
+    public static <T> T pop(ArrayList<T> list, int index)
+    {
+        T item = list.get(index);
+        list.remove(index);
+        return item;
+    }
+    public static Integer maxInd(Integer ...args)
+    {
+        ArrayList<Integer>argList = new ArrayList<>(List.of(args));
+        maxInd = argList.stream().reduce(0,Integer::max);
+        return maxInd; 
+    }
 }
