@@ -108,16 +108,17 @@ public class Main {
 
     private static void insertTodo(TextGraphics textGraphics, Screen screen) throws IOException {
 
-        textGraphics.putString(2, 10, "Into Enter Mode");
+        textGraphics.enableModifiers(SGR.REVERSE);
+        textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
+                "Into Enter Mode");
         screen.refresh();
+        defaultText(textGraphics);
         StringBuilder newTodo = new StringBuilder("[]");
         while (true) {
             KeyStroke keyStroke = screen.readInput();
             if (!keyStroke.equals(EOF)) {
-                switch (keyStroke.getKeyType())
-                {
-                    case Character:
-                    {
+                switch (keyStroke.getKeyType()) {
+                    case Character: {
                         screen.refresh();
                         System.out.println("Inside the insert");
                         newTodo.append(keyStroke.getCharacter());
@@ -127,30 +128,29 @@ public class Main {
                         break;
 
                     }
-                    case Backspace:
-                    {
-                        if(newTodo.length()>0)
-                        {
-                            newTodo.deleteCharAt(newTodo.length()-1);
-                            textGraphics.putString(2, 4+ todos.size(), " ".repeat(terminalWidth));
+                    case Backspace: {
+                        if (newTodo.length() > 0) {
+                            newTodo.deleteCharAt(newTodo.length() - 1);
+                            textGraphics.putString(2, 4 + todos.size(), " ".repeat(terminalWidth));
                             textGraphics.putString(2, 4 + todos.size(), newTodo.toString());
                         }
                         screen.refresh();
                         break;
                     }
-                    case Enter:
-                    {
-                        if(newTodo.length()>0)
-                        {
+                    case Enter: {
+                        if (newTodo.length() > 0) {
+                            String message = "Task Added!";
                             todos.add(newTodo.substring(2));
+                            textGraphics.putString(screen.getTerminalSize().getColumns() - message.length() - 1,
+                                    screen.getTerminalSize().getRows() - 1, message);
                             screen.refresh();
                         }
                         break;
                     }
-                    case Escape:
-                    {
-                        textGraphics.putString(2, 10, " ".repeat("Into Enter Mode".length()));
-                        textGraphics.putString(2, 4+ todos.size(), " ".repeat(terminalWidth));
+                    case Escape: {
+                        textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
+                                " ".repeat(terminalWidth));
+                        textGraphics.putString(2, 4 + todos.size(), " ".repeat(terminalWidth));
                         screen.refresh();
                         return;
                     }
@@ -272,5 +272,4 @@ public class Main {
         maxInd = argList.stream().reduce(0, Integer::max);
         return maxInd;
     }
-
 }
