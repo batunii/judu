@@ -7,14 +7,18 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
 
     static int mainInd = 0;
-    static String[] todos = {"Do This", "Do that", "And finally This"};
-    static String[] dones = {"Navigation", "Out Of Bound", "Git rebase", "OneMore to Test"};
+    static ArrayList<String> todos = new ArrayList<>(Arrays
+            .asList("Do This", "Do that", "And finally This"));
+    static ArrayList<String> dones = new ArrayList<>(Arrays
+            .asList("Navigation", "Out Of Bound", "Git rebase", "OneMore to Test"));
     static boolean isInTodo = true;
     static int terminalWidth = 0;
     static String donePrefix = "[X]";
@@ -74,6 +78,11 @@ public class Main {
                             screen.refresh();
                             break;
                         }
+                        case Enter:
+                        {
+                            System.out.println("Pressed Enter on item number: " + mainInd);
+                            break;
+                        }
                         default:
                         {
                             System.out.println(keyStroke.getKeyType().name());
@@ -127,11 +136,11 @@ public class Main {
         textGraphics.setBackgroundColor(TextColor.ANSI.DEFAULT);
     }
 
-    public static void moveDown(TextGraphics textGraphics, String [] todos, String prefix)
+    public static void moveDown(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
-        if(mainInd < todos.length) {
-            textGraphics.putString(2, 4 + mainInd, prefix + todos[mainInd]);
+        if(mainInd < todos.size()) {
+            textGraphics.putString(2, 4 + mainInd, prefix + todos.get(mainInd));
             if (mainInd > 0) {
                 resetOld(textGraphics, todos);
             }
@@ -144,14 +153,14 @@ public class Main {
         }
 
     }
-    public static void moveUp(TextGraphics textGraphics, String[] todos, String prefix)
+    public static void moveUp(TextGraphics textGraphics, ArrayList<String> todos, String prefix)
     {
         textGraphics.enableModifiers(SGR.REVERSE);
         mainInd--;
         if(mainInd>-1)
         {
-            textGraphics.putString(2, 4+mainInd, prefix+todos[mainInd]);
-            if(mainInd<todos.length-1)
+            textGraphics.putString(2, 4+mainInd, prefix+todos.get(mainInd));
+            if(mainInd<todos.size()-1)
             {resetOldUp(textGraphics, todos);}
         }
         else
@@ -159,23 +168,23 @@ public class Main {
             System.out.println("Out of Index, can't move");}
 
     }
-    public static void resetOld(TextGraphics textGraphics, String[] todos){
+    public static void resetOld(TextGraphics textGraphics, ArrayList<String> todos){
         textGraphics.disableModifiers(SGR.REVERSE);
         if(isInTodo)
-            textGraphics.putString(2, 4+mainInd-1, todoPrefix+todos[mainInd-1]);
+            textGraphics.putString(2, 4+mainInd-1, todoPrefix+todos.get(mainInd-1));
         else
-            textGraphics.putString(2, 4+mainInd-1, donePrefix+todos[mainInd-1]);
+            textGraphics.putString(2, 4+mainInd-1, donePrefix+todos.get(mainInd-1));
     }
-    public static void resetOldUp(TextGraphics textGraphics, String[] todos)
+    public static void resetOldUp(TextGraphics textGraphics, ArrayList<String> todos)
     {
         textGraphics.disableModifiers(SGR.REVERSE);
         if(isInTodo)
-            textGraphics.putString(2, 4+mainInd+1, todoPrefix+todos[mainInd+1]);
+            textGraphics.putString(2, 4+mainInd+1, todoPrefix+todos.get(mainInd+1));
         else
-            textGraphics.putString(2, 4+mainInd+1, donePrefix+todos[mainInd+1]);
+            textGraphics.putString(2, 4+mainInd+1, donePrefix+todos.get(mainInd+1));
     }
 
-    public static void renderTodo(String[] todos, TextGraphics textGraphics)
+    public static void renderTodo(ArrayList<String> todos, TextGraphics textGraphics)
     {
         textGraphics.putString(2, 3, "TODOs");
         String prefix = "[]";
@@ -188,7 +197,7 @@ public class Main {
         }
 
     }
-    public static void renderDones(String[] dones, TextGraphics textGraphics)
+    public static void renderDones(ArrayList<String> dones, TextGraphics textGraphics)
     {
         textGraphics.putString(2, 3, "Done");
         String prefix = "[X]";
