@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -25,7 +26,7 @@ import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
 
-    final static Path filePath = Paths.get("/home/shreyansh/Documents/Todos.txt");
+    final static Path filePath = Paths.get(System.getProperty("user.home")+ File.separator +"Todo.txt");
     static int mainInd = -1;
     static ArrayList<String> todos = new ArrayList<>();
     static ArrayList<String> dones = new ArrayList<>();
@@ -321,7 +322,7 @@ public class Main {
 
         try(
             final BufferedWriter writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8,
-                    StandardOpenOption.TRUNCATE_EXISTING))
+                    StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE_NEW))
         { writer.write(savedItems.toString());
             writer.flush();
         }
@@ -333,7 +334,7 @@ public class Main {
 
     public static void getItems() throws IOException {
         try(
-                final BufferedReader reader = Files.newBufferedReader(filePath);
+                final BufferedReader reader = Files.newBufferedReader(filePath)
                 )
         {
             reader.lines().forEach(ele->
