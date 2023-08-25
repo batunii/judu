@@ -5,29 +5,37 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import netscape.javascript.JSObject;
+import org.json.simple.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 import static com.googlecode.lanterna.input.KeyType.*;
 
 public class Main {
 
+    final static Path filePath = Paths.get("/home/shreyansh/Documents/Todos.txt");
     static int mainInd = -1;
-    static ArrayList<String> todos = new ArrayList<>(Arrays
-            .asList("Do This", "Do that", "And finally This"));
-    static ArrayList<String> dones = new ArrayList<>(Arrays
-            .asList("Navigation", "Out Of Bound", "Git rebase", "OneMore to Test"));
+    static ArrayList<String> todos = new ArrayList<>();
+    static ArrayList<String> dones = new ArrayList<>();
     static boolean isInTodo = true;
     static int terminalWidth = 0;
     static String donePrefix = "[X]";
     static String todoPrefix = "[]";
-    static int maxInd = Integer.max(todos.size(), dones.size());
+    static int maxInd = 0;
 
     public static void main(String[] args) throws IOException {
-        ;
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
         String heading = "Judu : A ToDo App";
@@ -37,6 +45,7 @@ public class Main {
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
 
+        getItems();
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
         screen.refresh();
@@ -49,6 +58,7 @@ public class Main {
             if (!keyStroke.getKeyType().equals(EOF))
                 switch (keyStroke.getKeyType()) {
                     case Escape: {
+                        saveTodos();
                         screen.stopScreen();
                         break;
                     }
@@ -271,5 +281,44 @@ public class Main {
         ArrayList<Integer> argList = new ArrayList<>(List.of(args));
         maxInd = argList.stream().reduce(0, Integer::max);
         return maxInd;
+    }
+    public static void saveTodos()throws IOException
+    {
+        StringJoiner savedItems = new StringJoiner("\n");
+        todos.stream().forEach(todo->savedItems.add("Todo:"+ todo));
+        dones.stream().forEach(done -> savedItems.add("Done:"+ done));
+        System.out.println(savedItems);
+
+        try(
+            final BufferedWriter writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8,
+                    StandardOpenOption.TRUNCATE_EXISTING))
+        { writer.write(savedItems.toString());
+            writer.flush();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getStackTrace());
+        }
+    }
+
+    public static void getItems() throws IOException {
+        try(
+                final BufferedReader reader = Files.newBufferedReader(filePath);
+                )
+        {
+            reader.lines().forEach(ele->
+                    {
+                        System.out.println(ele);
+                        if (ele.startsWith("Todo"))
+                            todos.add(ele.substring(5));
+                        else
+                            dones.add(ele.substring(5));
+                    }
+            );
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getStackTrace());
+        }
     }
 }
