@@ -45,6 +45,7 @@ public class Main {
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
         getItems();
+        maxInd = Integer.max(todos.size(), dones.size());
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
         screen.refresh();
@@ -58,7 +59,16 @@ public class Main {
                 switch (keyStroke.getKeyType()) {
                     case Escape: {
                         saveTodos();
-                        screen.stopScreen();
+                        textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
+                                "Press Esc Again to Exit");
+                        screen.refresh();
+                        if(screen.readInput().getKeyType().equals(Escape))
+                            screen.stopScreen();
+                        else
+                            textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
+                                    " ".repeat(terminalWidth));
+                        screen.refresh();
+
                         break;
                     }
                     case ArrowDown: {
@@ -171,6 +181,7 @@ public class Main {
                             todos.add(newTodo.substring(2));
                             textGraphics.putString(screen.getTerminalSize().getColumns() - message.length() - 1,
                                     screen.getTerminalSize().getRows() - 1, message);
+                            maxInd(maxInd, todos.size());
                             screen.refresh();
                         }
                         break;
