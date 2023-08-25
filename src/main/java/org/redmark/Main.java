@@ -44,7 +44,6 @@ public class Main {
         textGraphics.putString((screen.getTerminalSize().getColumns() - heading.length()) / 2, 1, heading);
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
-
         getItems();
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
@@ -92,11 +91,12 @@ public class Main {
                     }
                     case Enter: {
                         System.out.println("Pressed Enter on item number: " + mainInd);
-                        switchTasks();
-                        renderBlanks(textGraphics);
-                        changeRenderer(textGraphics);
-                        mainInd = -1;
-                        screen.refresh();
+                        if(-1<mainInd)
+                        {   switchTasks();
+                            renderBlanks(textGraphics);
+                            changeRenderer(textGraphics);
+                            mainInd = -1;
+                            screen.refresh();}
                         break;
                     }
                     case Insert: {
@@ -104,6 +104,17 @@ public class Main {
                         if (isInTodo)
                             insertTodo(textGraphics, screen);
 
+                        break;
+                    }
+                    case Delete:
+                    {
+                        deleteTasks();
+                        renderBlanks(textGraphics);
+                        if(isInTodo)
+                            renderTodo(todos, textGraphics);
+                        else
+                            renderDones(dones, textGraphics);
+                        screen.refresh();
                         break;
                     }
                     default: {
@@ -114,6 +125,13 @@ public class Main {
             else
                 break;
         }
+    }
+
+    private static void deleteTasks() {
+        if(isInTodo)
+            todos.remove(mainInd);
+        else
+            dones.remove(mainInd);
     }
 
     private static void insertTodo(TextGraphics textGraphics, Screen screen) throws IOException {
@@ -194,7 +212,6 @@ public class Main {
             renderTodo(todos, textGraphics);
             isInTodo = true;
         }
-
     }
 
     public static void defaultText(TextGraphics textGraphics) {
@@ -265,7 +282,8 @@ public class Main {
         String prefix = "[X]";
 
         int rows = 4;
-        for (String done : dones) {
+        for (String done : dones)
+        {
             textGraphics.putString(2, rows++, prefix + done);
         }
 
