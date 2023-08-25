@@ -183,6 +183,7 @@ public class Main {
                                     screen.getTerminalSize().getRows() - 1, message);
                             maxInd(maxInd, todos.size());
                             screen.refresh();
+                            newTodo.delete(2, newTodo.length());
                         }
                         break;
                     }
