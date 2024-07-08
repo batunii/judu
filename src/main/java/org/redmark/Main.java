@@ -56,18 +56,20 @@ public class Main {
             if (!keyStroke.getKeyType().equals(EOF))
                 switch (keyStroke.getKeyType()) {
                     case Escape: {
-                       saveTodos();
+                        saveTodos();
                         textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
                                 "Press Esc Again to Exit");
                         screen.refresh();
-                        if(screen.readInput().getKeyType().equals(Escape))
-                            screen.stopScreen();
+                        if (screen.readInput().getKeyType().equals(Escape))
+                        {screen.stopScreen();
+                        System.exit(0);}
+
                         else
                             textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
                                     " ".repeat(terminalWidth));
                         screen.refresh();
 
-                        System.exit(0);
+
 
                         break;
                     }
