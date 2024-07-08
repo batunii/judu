@@ -117,6 +117,17 @@ public class Main {
                         //System.out.println("Insert Pressed");
                           if (isInTodo)
                             insertTodo(textGraphics, screen);}
+                        else if(keyStroke.getCharacter()=='d')
+                        {
+                            deleteTasks();
+                            renderBlanks(textGraphics);
+                            if(isInTodo)
+                                renderTodo(todos, textGraphics);
+                            else
+                                renderDones(dones, textGraphics);
+                            screen.refresh();
+
+                        }
 
                         break;
                     }
