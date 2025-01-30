@@ -5,8 +5,6 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import netscape.javascript.JSObject;
-import org.json.simple.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -35,7 +32,7 @@ public class Main {
     static String donePrefix = "[X]";
     static String todoPrefix = "[]";
     static int maxInd = 0;
-
+    
     public static void main(String[] args) throws IOException {
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
@@ -52,7 +49,7 @@ public class Main {
         screen.refresh();
 
 
-        int index = 0;
+//        int index = 0;
         // KeyStroke keyStroke = screen.readInput();
         while (true) {
             KeyStroke keyStroke = screen.readInput();
@@ -63,12 +60,16 @@ public class Main {
                         textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
                                 "Press Esc Again to Exit");
                         screen.refresh();
-                        if(screen.readInput().getKeyType().equals(Escape))
-                            screen.stopScreen();
+                        if (screen.readInput().getKeyType().equals(Escape))
+                        {screen.stopScreen();
+                        System.exit(0);}
+
                         else
                             textGraphics.putString(1, screen.getTerminalSize().getRows() - 1,
                                     " ".repeat(terminalWidth));
                         screen.refresh();
+
+
 
                         break;
                     }
@@ -77,7 +78,7 @@ public class Main {
                             moveDown(textGraphics, todos, todoPrefix);
                         else
                             moveDown(textGraphics, dones, donePrefix);
-                        System.out.println("Move Down Called : " + index++ + " " + mainInd);
+                        //System.out.println("Move Down Called : " + index++ + " " + mainInd);
                         defaultText(textGraphics);
                         screen.refresh();
                         break;
@@ -88,12 +89,12 @@ public class Main {
                         else
                             moveUp(textGraphics, dones, donePrefix);
 
-                        System.out.println("Move Up Called : " + --index + " " + mainInd);
+                        //System.out.println("Move Up Called : " + --index + " " + mainInd);
                         screen.refresh();
                         break;
                     }
                     case Tab: {
-                        System.out.println("Tab Called, changing section");
+                        //System.out.println("Tab Called, changing section");
                         renderBlanks(textGraphics);
                         changeRenderer(textGraphics);
                         mainInd = -1;
@@ -101,7 +102,7 @@ public class Main {
                         break;
                     }
                     case Enter: {
-                        System.out.println("Pressed Enter on item number: " + mainInd);
+                        //System.out.println("Pressed Enter on item number: " + mainInd);
                         if(-1<mainInd)
                         {   switchTasks();
                             renderBlanks(textGraphics);
@@ -110,10 +111,23 @@ public class Main {
                             screen.refresh();}
                         break;
                     }
-                    case Insert: {
-                        System.out.println("Insert Pressed");
-                        if (isInTodo)
-                            insertTodo(textGraphics, screen);
+                    case Character: {
+                        if(keyStroke.getCharacter()=='i')
+                        {   
+                        //System.out.println("Insert Pressed");
+                          if (isInTodo)
+                            insertTodo(textGraphics, screen);}
+                        else if(keyStroke.getCharacter()=='d')
+                        {
+                            deleteTasks();
+                            renderBlanks(textGraphics);
+                            if(isInTodo)
+                                renderTodo(todos, textGraphics);
+                            else
+                                renderDones(dones, textGraphics);
+                            screen.refresh();
+
+                        }
 
                         break;
                     }
@@ -129,7 +143,7 @@ public class Main {
                         break;
                     }
                     default: {
-                        System.out.println(keyStroke.getKeyType().name());
+                        //System.out.println(keyStroke.getKeyType().name());
                         break;
                     }
                 }
@@ -159,11 +173,11 @@ public class Main {
                 switch (keyStroke.getKeyType()) {
                     case Character: {
                         screen.refresh();
-                        System.out.println("Inside the insert");
+                        //System.out.println("Inside the insert");
                         newTodo.append(keyStroke.getCharacter());
                         textGraphics.putString(2, 4 + todos.size(), newTodo.toString());
                         screen.refresh();
-                        System.out.println(newTodo);
+                        //System.out.println(newTodo);
                         break;
 
                     }
@@ -213,7 +227,7 @@ public class Main {
         for (int i = 4; i < 4 + maxInd(maxInd, todos.size(), dones.size()); i++) {
             textGraphics.putString(0, i, " ".repeat(terminalWidth));
         }
-        System.out.println(maxInd(maxInd, todos.size(), dones.size()));
+        //System.out.println(maxInd(maxInd, todos.size(), dones.size()));
     }
 
     private static void changeRenderer(TextGraphics textGraphics) {
@@ -239,13 +253,13 @@ public class Main {
         if (mainInd < todos.size()) {
 
             textGraphics.putString(2, 4 + mainInd, prefix + todos.get(mainInd));
-            System.out.println("The Index Curr is : " + mainInd);
+            //System.out.println("The Index Curr is : " + mainInd);
             if (mainInd > 0) {
                 resetOld(textGraphics, todos);
             }
         } else {
             mainInd--;
-            System.out.println("Out of Index, cant't move");
+            //System.out.println("Out of Index, cant't move");
         }
     }
 
@@ -260,7 +274,7 @@ public class Main {
             }
         } else {
             mainInd++;
-            System.out.println("Out of Index, can't move");
+            //System.out.println("Out of Index, can't move");
         }
     }
 
@@ -318,17 +332,17 @@ public class Main {
         StringJoiner savedItems = new StringJoiner("\n");
         todos.stream().forEach(todo->savedItems.add("Todo:"+ todo));
         dones.stream().forEach(done -> savedItems.add("Done:"+ done));
-        System.out.println(savedItems);
+        //System.out.println(savedItems);
 
         try(
-            final BufferedWriter writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8,
-                    StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE_NEW))
+            final BufferedWriter writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8, 
+              StandardOpenOption.TRUNCATE_EXISTING))
         { writer.write(savedItems.toString());
             writer.flush();
         }
         catch (Exception e)
         {
-            System.out.println(e.getStackTrace());
+            //System.out.println(e.getStackTrace());
         }
     }
 
@@ -339,7 +353,7 @@ public class Main {
         {
             reader.lines().forEach(ele->
                     {
-                        System.out.println(ele);
+                        //System.out.println(ele);
                         if (ele.startsWith("Todo"))
                             todos.add(ele.substring(5));
                         else
@@ -349,7 +363,7 @@ public class Main {
         }
         catch (Exception e)
         {
-            System.out.println(e.getStackTrace());
+            //System.out.println(e.getStackTrace());
         }
     }
 }
