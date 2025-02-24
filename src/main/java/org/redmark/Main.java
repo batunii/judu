@@ -1,11 +1,5 @@
 package org.redmark;
 
-import com.googlecode.lanterna.*;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import static com.googlecode.lanterna.input.KeyType.*;
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.input.KeyStroke;
+import static com.googlecode.lanterna.input.KeyType.ArrowDown;
+import static com.googlecode.lanterna.input.KeyType.ArrowUp;
+import static com.googlecode.lanterna.input.KeyType.Backspace;
+import static com.googlecode.lanterna.input.KeyType.Character;
+import static com.googlecode.lanterna.input.KeyType.Delete;
+import static com.googlecode.lanterna.input.KeyType.EOF;
+import static com.googlecode.lanterna.input.KeyType.Enter;
+import static com.googlecode.lanterna.input.KeyType.Escape;
+import static com.googlecode.lanterna.input.KeyType.Tab;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 
 public class Main {
 
@@ -33,7 +41,7 @@ public class Main {
     static String todoPrefix = "[]";
     static int maxInd = 0;
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
         String heading = "Judu : A ToDo App";
@@ -42,7 +50,7 @@ public class Main {
         textGraphics.putString((screen.getTerminalSize().getColumns() - heading.length()) / 2, 1, heading);
         defaultText(textGraphics);
         terminalWidth = screen.getTerminalSize().getColumns();
-        getItems();
+        getItems(false);
         maxInd = Integer.max(todos.size(), dones.size());
         renderTodo(todos, textGraphics);
         //renderDones(dones, textGraphics);
@@ -108,7 +116,9 @@ public class Main {
                             renderBlanks(textGraphics);
                             changeRenderer(textGraphics);
                             mainInd = -1;
-                            screen.refresh();}
+                            screen.refresh();
+                            saveTodos();
+                        }
                         break;
                     }
                     case Character: {
@@ -128,6 +138,23 @@ public class Main {
                             screen.refresh();
 
                         }
+                        else if (keyStroke.getCharacter() =='t')
+                        {
+                            todos.clear();
+                            dones.clear();
+                            screen.clear();
+                            textGraphics.enableModifiers(SGR.REVERSE);
+                            textGraphics.putString((screen.getTerminalSize().getColumns() - heading.length()) / 2, 1, heading);
+                            defaultText(textGraphics);
+                            getItems(true);
+                            renderBlanks(textGraphics);
+                            if(isInTodo)
+                                renderTodo(todos, textGraphics);
+                            else
+                                renderDones(dones, textGraphics);
+
+                            }
+                            screen.refresh();
 
                         break;
                     }
@@ -342,13 +369,14 @@ public class Main {
         }
         catch (Exception e)
         {
-            //System.out.println(e.getStackTrace());
+            System.out.println(e.getStackTrace());
         }
     }
 
-    public static void getItems() throws IOException {
-        try(
-                final BufferedReader reader = Files.newBufferedReader(filePath)
+    public static void getItems(Boolean ticktickSync) throws Exception {
+        
+        try(       
+        final BufferedReader reader = Files.newBufferedReader(filePath)
                 )
         {
             reader.lines().forEach(ele->
@@ -360,10 +388,14 @@ public class Main {
                             dones.add(ele.substring(5));
                     }
             );
+            if(ticktickSync)
+            {ArrayList<String> ticktickTasks = TickTickIntgr.getTasks();
+            ticktickTasks.stream().filter(t->!(todos.contains(t) || dones.contains(t))).forEach(t->todos.add(t));}
+            
         }
         catch (Exception e)
         {
-            //System.out.println(e.getStackTrace());
+            System.out.println(e.getStackTrace());
         }
     }
 }
